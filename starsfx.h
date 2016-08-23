@@ -2,7 +2,7 @@
 #define __STARFX_H__
 
 #include <math.h>
-
+#include "metro.h"  // simple metronome-like library
 
 class StarsFX {
   protected:
@@ -17,7 +17,9 @@ class StarsFX {
     bool bRefresh;
     
     int lum;
-    int rfreq;
+    //int rfreq;
+
+    Metro *metro;
     
     int howmany;
     int pinData;
@@ -27,7 +29,7 @@ class StarsFX {
     StarsFX();
     StarsFX& bind(int *leds, int cnt);
 
-    StarsFX &refreshRate(int freq); // times per second
+    StarsFX &refreshRate(int ms);
 
     StarsFX& enter();  // stars the animation for the special FX
     StarsFX& leave();  // stops the animation for the special FX

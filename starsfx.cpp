@@ -2,15 +2,19 @@
 #include "config.h"
 #include <Arduino.h>
 
+#define DEF_THRESHOLD 97.0
+
 StarsFX::StarsFX() {
   lum = 255;
+  metro = new Metro(10);
   _duration = 2000;
-  threshold = 97.0;
+  threshold = DEF_THRESHOLD;
   bRefresh = false;
 }
 
-StarsFX &StarsFX::refreshRate(int freq) {
-  rfreq = freq;
+StarsFX &StarsFX::refreshRate(int ms) {
+  //rfreq = freq;
+  metro->interval(ms);
 }
 
 StarsFX& StarsFX::bind(int *leds, int cnt) {
@@ -32,7 +36,9 @@ StarsFX& StarsFX::bind(int *leds, int cnt) {
 
 StarsFX& StarsFX::enter() {
   timein = millis();
+  threshold = DEF_THRESHOLD;
   bRefresh = true;
+  metro->reset();
   return *this;
 }
 
@@ -52,6 +58,7 @@ StarsFX& StarsFX::blank() {
 StarsFX& StarsFX::update() {
 
   if(bRefresh) {
+    long elapsed = millis() - timein;
     for(int i = 0; i < howmany; i++) {
       int chance = random(0, 99);
       if(chance > threshold) {
@@ -61,24 +68,17 @@ StarsFX& StarsFX::update() {
       }
     } // for
 
-    if(millis() > (timein + _duration) ) {
+    if(elapsed > _duration ) {
       bRefresh = false;
     }
-
-  } /*else {
-    if( (millis() % rfreq) == 0) {
-      // mark to refresh in next update
-      bRefresh = true;
-    }
-    
-  }*/
+  }
 
   return *this;
 } // update
 
 
 StarsFX& StarsFX::show() {
-  if(bRefresh) {
+  if( bRefresh && metro->check() ) {
     for( int i = 0; i < LED_COUNT; i++ ) {
       int val = live[i];
       if ( val > 0) {
