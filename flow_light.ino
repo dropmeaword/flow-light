@@ -4,6 +4,8 @@
 #include <CmdMessenger.h>  // CmdMessenger
 
 
+Metro *metroldr;  // timer that determines how often we read from the LDR
+
 /**
  *  PROTOCOL: The node gets a string-based serial protocol defined by numbers, the
  *  string has a space in between parameters and it is terminated by a semicolon ';'
@@ -41,14 +43,14 @@ char command_separator = ';';
 CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separator);
 
 void debug(int node, int led, int val) {
-    Serial.println("[RX] ");
-    Serial.print("   NODE=");
-    Serial.print(node);
-    Serial.print(" LED/FX=");
-    Serial.print(led);
-    Serial.print(" VAL=");
-    Serial.print(val);
-    Serial.println();
+  Serial.println("[RX] ");
+  Serial.print("   NODE=");
+  Serial.print(node);
+  Serial.print(" LED/FX=");
+  Serial.print(led);
+  Serial.print(" VAL=");
+  Serial.print(val);
+  Serial.println();
 }
 
 void on_reset()
@@ -116,6 +118,8 @@ void attachCommandCallbacks() {
 void setup(void) {
   Serial.begin(57600);
 
+  metroldr = new Metro(LDR_READ_EVERY_MS);
+
   // pin config
   for (int i = 0 ; i < LED_COUNT; i++) {
     pinMode(led_pin[i], OUTPUT);
@@ -133,6 +137,15 @@ void setup(void) {
 void serialPump() {
   // Process incoming serial data, and perform callbacks
   cmdMessenger.feedinSerialData();
+}
+
+void readLightSensor() {
+  int reading = 0;
+  // read 4 times to get a stable reading
+  for(int i = 0; i < 4; i++) {
+    reading += analogRead(ldr_pin);
+    delay(10);
+  }
 }
 
 void loop() {

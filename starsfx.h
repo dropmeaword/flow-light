@@ -37,6 +37,9 @@ class StarsFX {
     StarsFX& duration(unsigned long d) { _duration = d; return *this; } // set duration
     
     StarsFX& blank();  // blank-out the LED backbuffer
+
+    StarsFX& flip(); //  copy backbuffer to LEDs
+    
     StarsFX& update(); // update animation
     StarsFX& show();   // copy backbuffer to real LEDs
 };

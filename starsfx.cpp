@@ -52,7 +52,21 @@ StarsFX& StarsFX::blank() {
   for(int i = 0; i < howmany; i++) {
     live[i] =  0;
   }
+
+  flip();
+  
   return *this;
+}
+
+StarsFX& StarsFX::flip() {
+  for( int i = 0; i < LED_COUNT; i++ ) {
+    int val = live[i];
+    if ( val > 0) {
+      digitalWrite(led_pin[i], HIGH);
+    } else {
+      digitalWrite(led_pin[i], LOW);
+    }
+  } // for
 }
 
 StarsFX& StarsFX::update() {
@@ -79,6 +93,8 @@ StarsFX& StarsFX::update() {
 
 StarsFX& StarsFX::show() {
   if( bRefresh && metro->check() ) {
+    flip();
+    /*
     for( int i = 0; i < LED_COUNT; i++ ) {
       int val = live[i];
       if ( val > 0) {
@@ -87,6 +103,7 @@ StarsFX& StarsFX::show() {
         digitalWrite(led_pin[i], LOW);
       }
     } // for
+    */
   }  // if
   return *this;
 }
