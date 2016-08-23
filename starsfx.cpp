@@ -4,7 +4,7 @@
 
 StarsFX::StarsFX() {
   lum = 255;
-  duration = 2000;
+  _duration = 2000;
   threshold = 97.0;
   bRefresh = false;
 }
@@ -61,7 +61,7 @@ StarsFX& StarsFX::update() {
       }
     } // for
 
-    if(millis() > (timein + duration) ) {
+    if(millis() > (timein + _duration) ) {
       bRefresh = false;
     }
 

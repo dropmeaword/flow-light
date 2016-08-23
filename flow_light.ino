@@ -96,8 +96,8 @@ void on_fire()
 
   // use the meta parameter to change the frequency of blinking
   stars.refreshRate(freq);
-  stars.enter();
-
+  stars.duration(secs * 1000);
+  stars.enter(); // start special FX
 } // on_fire
 
 void on_unknown() {

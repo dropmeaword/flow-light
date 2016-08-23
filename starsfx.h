@@ -3,6 +3,7 @@
 
 #include <math.h>
 
+
 class StarsFX {
   protected:
     int     *live;
@@ -10,7 +11,7 @@ class StarsFX {
 
     float   threshold;
     
-    unsigned long duration;  // duration
+    unsigned long _duration;  // duration
     unsigned long timein;    // time in
 
     bool bRefresh;
@@ -30,6 +31,8 @@ class StarsFX {
 
     StarsFX& enter();  // stars the animation for the special FX
     StarsFX& leave();  // stops the animation for the special FX
+
+    StarsFX& duration(unsigned long d) { _duration = d; return *this; } // set duration
     
     StarsFX& blank();  // blank-out the LED backbuffer
     StarsFX& update(); // update animation
