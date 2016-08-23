@@ -54,6 +54,7 @@ void debug(int node, int led, int val) {
 void on_reset()
 {
   Serial.println("on reset");
+  stars.leave();
   stars.blank();
   stars.show();
 }
@@ -104,6 +105,7 @@ void on_unknown() {
 }
 
 void attachCommandCallbacks() {
+  cmdMessenger.attach(kReset, on_reset);
   cmdMessenger.attach(kSet, on_set);
   cmdMessenger.attach(kFire, on_fire);
   cmdMessenger.attach(on_unknown);

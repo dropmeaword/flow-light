@@ -4,6 +4,7 @@
 
 StarsFX::StarsFX() {
   lum = 255;
+  duration = 2000;
   threshold = 97.0;
   bRefresh = false;
 }
@@ -31,11 +32,13 @@ StarsFX& StarsFX::bind(int *leds, int cnt) {
 
 StarsFX& StarsFX::enter() {
   timein = millis();
+  bRefresh = true;
   return *this;
 }
 
 StarsFX& StarsFX::leave() {
-    return *this;
+  bRefresh = false;
+  return *this;
 }
 
 
@@ -57,28 +60,34 @@ StarsFX& StarsFX::update() {
         live[i] =  0;
       }
     } // for
-  } else {
+
+    if(millis() > (timein + duration) ) {
+      bRefresh = false;
+    }
+
+  } /*else {
     if( (millis() % rfreq) == 0) {
       // mark to refresh in next update
       bRefresh = true;
     }
-  }
+    
+  }*/
 
   return *this;
 } // update
 
 
 StarsFX& StarsFX::show() {
-  for( int i = 0; i < LED_COUNT; i++ ) {
-    int val = live[i];
-    if ( val > 0) {
-      digitalWrite(led_pin[i], HIGH);
-    } else {
-      digitalWrite(led_pin[i], LOW);
-    }
-  } // if
-  
-  
+  if(bRefresh) {
+    for( int i = 0; i < LED_COUNT; i++ ) {
+      int val = live[i];
+      if ( val > 0) {
+        digitalWrite(led_pin[i], HIGH);
+      } else {
+        digitalWrite(led_pin[i], LOW);
+      }
+    } // for
+  }  // if
   return *this;
 }
 
