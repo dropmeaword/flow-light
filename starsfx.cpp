@@ -82,8 +82,10 @@ StarsFX& StarsFX::update() {
       }
     } // for
 
+    // if the animation loop finished, stop and blank-out
     if(elapsed > _duration ) {
       bRefresh = false;
+      blank();
     }
   }
 

@@ -1,10 +1,13 @@
 #include "config.h"
 #include "easing.h"
 #include "starsfx.h"
+#include "runningaverage.h"
 #include <CmdMessenger.h>  // CmdMessenger
 
 
 Metro *metroldr;  // timer that determines how often we read from the LDR
+
+RunningAverage ravg( (1000/LDR_READ_EVERY_MS)*10 );
 
 /**
  *  PROTOCOL: The node gets a string-based serial protocol defined by numbers, the
@@ -139,17 +142,41 @@ void serialPump() {
   cmdMessenger.feedinSerialData();
 }
 
-void readLightSensor() {
-  int reading = 0;
+double readLightSensor() {
+  double reading = .0;
   // read 4 times to get a stable reading
   for(int i = 0; i < 4; i++) {
     reading += analogRead(ldr_pin);
-    delay(10);
+    delay(5);
   }
+
+  return (reading / 4.0);
 }
 
 void loop() {
   serialPump();
+
+  if( metroldr->check() ) {
+    double ldr = readLightSensor();
+    ravg.addValue(ldr);
+    double avg = ravg.getAverage();
+    double dev = ((100 * ldr) / avg );
+    Serial.print(" LDR=");
+    Serial.print(ldr);
+    Serial.print(" AVG=");
+    Serial.print(avg);
+    Serial.print(" DEV=");
+    Serial.print(dev);
+    Serial.println();
+    
+    // check trigger condition
+    if( dev < 80.0 ) {
+      // use the meta parameter to change the frequency of blinking
+      stars.refreshRate(8);
+      stars.duration(5 * 1000);
+      stars.enter();
+    }
+  }  
   
   // update special fx
   stars.update();
