@@ -4,7 +4,6 @@
 #include "runningaverage.h"
 #include <CmdMessenger.h>  // CmdMessenger
 
-
 Metro *metroldr;  // timer that determines how often we read from the LDR
 
 RunningAverage ravg( (1000/LDR_READ_EVERY_MS)*10 );
@@ -46,19 +45,21 @@ char command_separator = ';';
 CmdMessenger cmdMessenger = CmdMessenger(Serial, field_separator, command_separator);
 
 void debug(int node, int led, int val) {
-  Serial.println("[RX] ");
-  Serial.print("   NODE=");
-  Serial.print(node);
-  Serial.print(" LED/FX=");
-  Serial.print(led);
-  Serial.print(" VAL=");
-  Serial.print(val);
-  Serial.println();
+  if(DEBUG) {
+    Serial.println("[RX] ");
+    Serial.print("   NODE=");
+    Serial.print(node);
+    Serial.print(" LED/FX=");
+    Serial.print(led);
+    Serial.print(" VAL=");
+    Serial.print(val);
+    Serial.println();
+  }
 }
 
 void on_reset()
 {
-  Serial.println("on reset");
+  if(DEBUG) Serial.println("on reset");
   stars.leave();
   stars.blank();
   stars.show();
@@ -67,7 +68,7 @@ void on_reset()
 /** turn one LED on and OFF per command */
 void on_set()
 {
-  Serial.println("on set");
+  if(DEBUG) Serial.println("on set");
 
   // Read led state argument, interpret string as boolean
   int node = cmdMessenger.readInt16Arg();
@@ -90,7 +91,7 @@ void on_set()
 /** trigger special FX stars */
 void on_fire()
 {
-  Serial.println("on fire STARFX");
+  if(DEBUG) Serial.println("on fire STARFX");
 
   // Read led state argument, interpret string as boolean
   int node = cmdMessenger.readInt16Arg();
@@ -106,7 +107,7 @@ void on_fire()
 } // on_fire
 
 void on_unknown() {
-  Serial.println("command unknown");
+  if(DEBUG) Serial.println("command unknown");
 }
 
 void attachCommandCallbacks() {
@@ -161,16 +162,19 @@ void loop() {
     ravg.addValue(ldr);
     double avg = ravg.getAverage();
     double dev = ((100 * ldr) / avg );
-    Serial.print(" LDR=");
-    Serial.print(ldr);
-    Serial.print(" AVG=");
-    Serial.print(avg);
-    Serial.print(" DEV=");
-    Serial.print(dev);
-    Serial.println();
+    
+    if(DEBUG) {
+      Serial.print(" LDR=");
+      Serial.print(ldr);
+      Serial.print(" AVG=");
+      Serial.print(avg);
+      Serial.print(" DEV=");
+      Serial.print(dev);
+      Serial.println();
+    }
     
     // check trigger condition
-    if( dev < 80.0 ) {
+    if( dev < 90.0 ) {
       // use the meta parameter to change the frequency of blinking
       stars.refreshRate(8);
       stars.duration(5 * 1000);
